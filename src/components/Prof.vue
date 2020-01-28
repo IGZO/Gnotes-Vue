@@ -42,11 +42,20 @@
                       <label for="email" class="bmd-label-floating">Email</label>
                       <input v-model="Professeur.email" type="text" class="form-control" />
                     </div>
+<!--
                     <div class="form-group">
                       <label for="text" class="bmd-label-floating"
                         >username</label
                       >
                       <input v-model="Professeur.username" type="text" class="form-control" />
+                    </div>
+
+                    -->
+                    <div class="form-group">
+                      <label for="text" class="bmd-label-floating"
+                        >Password</label
+                      >
+                      <input v-model="Professeur.password" type="text" class="form-control" />
                     </div>
                   </form>
                 </div>
@@ -55,7 +64,7 @@
                     class="btn btn-rose btn-round"
                     data-toggle="modal"
                     data-target="#confirm"
-                    @click="settingEnvirement(Professeur)"
+                    
                     
                   >
                     Ajouter
@@ -80,7 +89,7 @@
                           <th>Email</th>
                           <th>Nom</th>
                           <th>Prenon</th>
-                          <th>username</th>
+                        
                           <th class="text-right">Actions</th>
                         </tr>
                       </thead>
@@ -90,7 +99,6 @@
                           <td>{{ Professeur.email }}</td>
                           <td>{{ Professeur.first_name }}</td>
                           <td>{{ Professeur.last_name }}</td>
-                          <td>{{ Professeur.username }}</td>
                           <td class="td-actions text-right">
                             <button
                               type="button"
@@ -221,8 +229,7 @@ export default {
         first_name: "",
         last_name: "",
         email: "",
-        realm: "",
-        username: "",
+        password: "",
         emailVerified: true
       },
       Professeurs: [],
@@ -230,7 +237,7 @@ export default {
   },
   methods: {
     postSemester: function() {
-      if (this.Professeur.name)
+      if (this.Professeur.first_name)
         axios
           .post(this.BaseUrl + "Teachers", this.Professeur)
           .then(response => {
@@ -240,8 +247,8 @@ export default {
               first_name: "",
               last_name: "",
               email: "",
-              realm: "",
-              username: "",
+              password: "",
+              emailVerified: true
             }
           })
           .catch(error => {
@@ -279,7 +286,7 @@ export default {
       .get(this.BaseUrl + "Teachers")
       .then(response => {
         console.log(response);
-        this.Modules = response.data;
+        this.Professeurs = response.data;
       })
       .catch(error => {
         console.log(error);

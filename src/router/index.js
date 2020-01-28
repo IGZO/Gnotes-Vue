@@ -7,6 +7,7 @@ import Module from '@/components/Module'
 import Class from '@/components/Class'
 import Prof from '@/components/Prof'
 import Login from '@/components/Login'
+import Logout from '@/components/Logout'
 import Home from '@/components/Home'
 import Semester from '@/components/Semester'
 import Field from '@/components/Field'
@@ -28,8 +29,9 @@ export default new Router({
     { path: '/Gfield', name: 'field', component: Field },
     { path: '/Gclass', name: 'profs', component: Class },
     { path: '/login', name: 'login', component: Login },
+    { path: '/logout', name: 'logout', component: Logout },
     { path: '/editnotes', name: 'edit', component: Edit },
-    { path: '/', name: 'home', component: Home },
+    { path: '/', name: 'home', component: Login },
 
   ]
 })

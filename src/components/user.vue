@@ -1,12 +1,14 @@
 <template>
    <div class="user">
       <div class="photo">
-        <img src="static/assets/img/faces/avatar.jpg" />
+        <img src="static/assets/img/default-avatar.png" />
       </div>
       <div class="user-info">
         <a data-toggle="collapse" href="#collapseExample" class="username">
           <span>
-            Meriem Elhadi
+            {{
+              $session.get('userType')
+            }}
             <!-- <b class="caret"></b> -->
           </span>
         </a>
@@ -32,6 +34,16 @@ export default {
     return {
       msg: "Welcome to Your Vue.js App"
     };
+  },
+  methods: {
+    
+    
+  },
+  beforeMount() {
+
+  },
+  beforeCreate() {
+    this.$session.start();
   }
 };
 </script>

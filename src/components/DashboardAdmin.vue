@@ -251,7 +251,22 @@ export default {
     return {
       msg: "Welcome to Your Vue.js App"
     };
-  }
+  },
+  beforeMount() {
+    if(!(this.$session.has("userType") === false)){
+      switch(this.$session.get('userType')){
+        case "Resp": this.$router.push('/') ; break;
+        case "Prof":  this.$router.push('/'); break;
+        default: console.log("default"); break;
+      }
+    }else{
+      this.$router.push('/login')
+    }
+  },
+  beforeCreate() {
+    this.$session.start();
+    console.log("executed")
+  },
 };
 </script>
 

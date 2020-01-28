@@ -39,10 +39,7 @@
                       />
                     </div>
                     <div class="col-md-6 form-group">
-                      <select
-                        v-model="Module.semesterId"
-                        class="form-control" 
-                      >
+                      <select v-model="Module.semesterId" class="form-control">
                         <option selected> Semester </option>
                         <option v-for="item in semester" :value="item.id">
                           {{ item.name }}
@@ -52,10 +49,7 @@
                     </div>
 
                     <div class="col-md-6 form-group">
-                      <select
-                        v-model="Module.fieldId"
-                        class="form-control" 
-                      >
+                      <select v-model="Module.fieldId" class="form-control">
                         <option selected> Filière </option>
                         <option v-for="item in feilds" :value="item.id">
                           {{ item.name }}
@@ -96,16 +90,16 @@
                           <th class="text-right">Actions</th>
                         </tr>
                       </thead>
+
                       <tbody>
-                        <tr v-for="Module in Modules">
+                        <tr v-for="Module in Modules" :key="Module">
                           <td class="text-center">{{ Module.id }}</td>
                           <td>{{ Module.name }}</td>
-                          <td >
-                          
-                            {{ semester.find(element => element.id == Module.semesterId).name }}
+                          <td>
+                            {{ Module.semester.name }}
                           </td>
                           <td>
-                            {{ feilds.find(element => element.id == Module.fieldId).name }}
+                            {{ Module.field.name }}
                           </td>
 
                           <td class="td-actions text-right">
@@ -116,7 +110,6 @@
                               @click="settingEnvirement(Module)"
                               data-toggle="modal"
                               data-target="#delete"
-                              
                             >
                               <i class="material-icons">close</i>
                             </button>
@@ -159,7 +152,12 @@
               <button type="button" class="btn btn-link" data-dismiss="modal">
                 Annuler
               </button>
-              <button type="button" @click="postSemester()" class="btn btn-success btn-link" data-dismiss="modal">
+              <button
+                type="button"
+                @click="postSemester()"
+                class="btn btn-success btn-link"
+                data-dismiss="modal"
+              >
                 OK
                 <div class="ripple-container"></div>
               </button>
@@ -196,7 +194,12 @@
               <button type="button" class="btn btn-link" data-dismiss="modal">
                 Annuler
               </button>
-              <button type="button" @click="delSemester()" class="btn btn-success btn-link" data-dismiss="modal">
+              <button
+                type="button"
+                @click="delSemester()"
+                class="btn btn-success btn-link"
+                data-dismiss="modal"
+              >
                 OK
                 <div class="ripple-container"></div>
               </button>
@@ -226,9 +229,9 @@ export default {
     return {
       toDelete: {},
       Module: {
-        name: '',
-        semesterId: '',
-        fieldId: ''
+        name: "",
+        semesterId: "",
+        fieldId: ""
       },
       Modules: [],
       feilds: [],
@@ -236,8 +239,11 @@ export default {
     };
   },
   methods: {
-    test: function(){
-      console.log(this.semester.find(element => element.id == '5ddd6ecd384a0900043c3b11').name   )
+    test: function() {
+      console.log(
+        this.semester.find(element => element.id == "5ddd6ecd384a0900043c3b11")
+          .name
+      );
     },
     postSemester: function() {
       if (this.Module.name)
@@ -245,20 +251,32 @@ export default {
           .post(this.BaseUrl + "Modules", this.Module)
           .then(response => {
             console.log(response);
-            this.Modules.push(response.data);
-            this.Module.name = ''
-            this.Module.semesterId = ''
-            this.Module.fieldId = ''
+            let obje = {
+              name: response.data.name,
+              id: response.data.id,
+              semesterId: response.data.semesterId,
+              fieldId: response.data.fieldId,
+              field: { 
+                name: this.feilds.find(element => element.id == response.data.fieldId ).name, 
+                id: response.data.semesterId 
+              },
+              semester: {
+                name: this.semester.find(element => element.id == response.data.semesterId ).name,
+                id: response.data.semesterId
+              }
+            };
+            console.log(obje);
+            this.Modules.push(obje);
+            this.Module.name = "";
+            this.Module.semesterId = "";
+            this.Module.fieldId = "";
           })
           .catch(error => {
             console.log(error);
           });
-      
-
-
     },
     settingEnvirement: function(item) {
-      this.toDelete = item
+      this.toDelete = item;
       console.log(this.toDelete);
     },
     delSemester: function() {
@@ -284,37 +302,33 @@ export default {
     //this.$session.start();
   },
   created: function() {
-    axios
-      .get(this.BaseUrl + 'Modules')
-      .then(response => {
-        console.log(response);
-        this.Modules = response.data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    let one =
+      this.BaseUrl + "Modules?filter[include]=field&filter[include]=semester";
+    let two = this.BaseUrl + "Semesters";
+    let three = this.BaseUrl + "Fields";
+
+    const requestOne = axios.get(one);
+    const requestTwo = axios.get(two);
+    const requestThree = axios.get(three);
 
     axios
-      .get(this.BaseUrl + "Semesters")
-      .then(response => {
-        console.log(response);
-        this.semester = response.data;
-        
-      })
-      .catch(error => {
-        console.log(error);
+      .all([requestOne, requestTwo, requestThree])
+      .then(
+        axios.spread((...responses) => {
+          console.log(responses);
+          const responseOne = responses[0];
+          this.Modules = responseOne.data;
+          console.log(this.Modules);
+          const responseTwo = responses[1];
+          this.semester = responseTwo.data;
+          const responesThree = responses[2];
+          this.feilds = responesThree.data;
+          // use/access the results
+        })
+      )
+      .catch(errors => {
+        // react on errors.
       });
-
-    axios
-      .get(this.BaseUrl + "Fields")
-      .then(response => {
-        
-        this.feilds = response.data;
-        console.log(this.feilds);
-      })
-      .catch(error => {
-        console.log(error);
-      }); 
   }
 };
 </script>

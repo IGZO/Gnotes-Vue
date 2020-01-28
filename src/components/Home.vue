@@ -110,6 +110,22 @@ export default {
     return {
       msg: "Welcome to Your Vue.js App"
     };
+  },
+  beforeMount() {
+    if(typeof this.$session.has("userType") !== "undefined"){
+      switch(this.$session.get('userType')){
+        case "Admin": this.$router.push('/Admin') ; break;
+        case "Resp": this.$router.push('/Resp') ; break;
+        case "Prof": this.$router.push('/Prof') ; break;
+        default: console.log("default"); break;
+      }
+    }else{
+      console.log("no session found");
+    }
+  },
+  beforeCreate() {
+    this.$session.start();
+    console.log("executed")
   }
 };
 </script>

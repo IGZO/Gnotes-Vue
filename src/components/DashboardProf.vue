@@ -21,11 +21,10 @@
       <div class="content">
         <div class="content">
           <div class="container-fluid">
-            
             <div class="row">
 
-              <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats" >
+              <div v-for="card in Cards" class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
                   <div class="card-header card-header-success card-header-icon">
                     <div class="card-icon">
                       <i class="material-icons">store</i>
@@ -35,30 +34,32 @@
                   </div>
                   <div class="card-footer">
                     <div class="stats">
-                    <a >  <i class="material-icons">link</i> ouvrir le lien </a>
+                      <a @click="setSession(card.subjectId)"> <i class="material-icons">link</i> ouvrir le lien </a>
                     </div>
                   </div>
                 </div>
               </div>
+                <!--
+                      <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="card card-stats">
+                            <div class="card-header card-header-rose card-header-icon">
+                              <div class="card-icon">
+                                <i class="material-icons">equalizer</i>
+                              </div>
+                              <p class="card-category">Communication Professionelle</p>
+                              <h3 class="card-title">MBDIO</h3>
+                            </div>
+                            <div class="card-footer">
+                              <div class="stats">
+                                <a href="/editnotes">
+                                  <i class="material-icons">link</i> ouvrir le lien
+                                </a>
+                              </div>
+                            </div>
+                        </div>
+                      </div>
 
-              
-              <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                  <div class="card-header card-header-rose card-header-icon">
-                    <div class="card-icon">
-                      <i class="material-icons">equalizer</i>
-                    </div>
-                    <p class="card-category">Communication Professionelle</p>
-                    <h3 class="card-title">MBDIO</h3>
-                  </div>
-                  <div class="card-footer">
-                    <div class="stats">
-                    <a href="/editnotes"> <i class="material-icons">link</i> ouvrir le lien  </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
+                  -->
             </div>
           </div>
         </div>
@@ -72,6 +73,8 @@
 import SideBarProf from "./SideBarProf";
 import Footer from "./Footer";
 import NavBar from "./NavBar";
+import axios from "axios";
+
 export default {
   components: {
     SideBarProf,
@@ -80,12 +83,53 @@ export default {
   },
   data() {
     return {
-      msg: "Welcome to Your Vue.js App"
+      Cards: [
+        //{ module: "jhkjhjkh", filiere: "khjkkkl", submited: "false",  fileName: "5bff74ae9c8840.xls", subjectId: "jhgdhqsqjd"}
+        
+      ]
     };
+  },
+  methods: {
+    setSession: function(subjectId){
+      this.$session.set("subjectId",subjectId);
+      this.$router.push("/editnotes");
+    }
+  },
+  beforeMount() {
+    if (!(this.$session.has("userType") === false)) {
+      switch (this.$session.get("userType")) {
+        case "Admin":
+          this.$router.push("/");
+          break;
+        case "Resp":
+          this.$router.push("/");
+          break;
+        default:
+          console.log("default");
+          break;
+      }
+    } else {
+      this.$router.push("/login");
+    }
+  },
+  beforeCreate() {
+    this.$session.start();
+    console.log("executed");
+  },
+  created: function() {
+
+      axios
+      .get(this.BaseUrl + 'Excels?filter={"where":{"teacherId":"'+this.$session.get("userId")+'"}}')
+      .then(response => {
+        console.log(response);
+        this.Cards = response.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
   }
 };
 </script>
 
-<style>
-
-</style>
+<style></style>

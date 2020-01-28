@@ -49,10 +49,7 @@
                       />
                     </div>
                     <div class="col-md-6 form-group">
-                      <select
-                        v-model="Subject.moduleId"
-                        class="form-control" 
-                      >
+                      <select v-model="Subject.moduleId" class="form-control">
                         <option selected> Modules </option>
                         <option v-for="item in Modules" :value="item.id">
                           {{ item.name }}
@@ -60,17 +57,12 @@
                       </select>
                       <br />
                     </div>
-                    
 
                     <div class="col-md-6 form-group">
-                      <select
-                      v-model="Subject.teacherId"
-                        
-                        class="form-control" 
-                      >
+                      <select v-model="Subject.teacherId" class="form-control">
                         <option selected> Professeur </option>
-                        <option v-for="item in Modules" :value="item.id">
-                          {{ item.name }}
+                        <option v-for="item in Teachers" :value="item.id">
+                          {{ item.last_name }}
                         </option>
                       </select>
                       <br />
@@ -114,18 +106,14 @@
                           <td class="text-center">{{ Subject.id }}</td>
                           <td>{{ Subject.name }}</td>
                           <td>{{ Subject.coeff }}</td>
-                          
-                          <td >
-                          
-                            <!--
-                            {{ Teachers.find(element => element.id == Subject.teacherId).username }}
-                            -->
-                          </td>
+                          <td>{{ Subject.teacher.last_name }}</td>
+
                           <td>
-                             
-                            {{ Modules.find(element => element.id == Subject.moduleId).name }}
+                            
+                            {{ Subject.module.name }}
                             
                           </td>
+                         
 
                           <td class="td-actions text-right">
                             <button
@@ -135,7 +123,6 @@
                               @click="settingEnvirement(Subject)"
                               data-toggle="modal"
                               data-target="#delete"
-                              
                             >
                               <i class="material-icons">close</i>
                             </button>
@@ -178,7 +165,12 @@
               <button type="button" class="btn btn-link" data-dismiss="modal">
                 Annuler
               </button>
-              <button type="button" @click="postSemester()" class="btn btn-success btn-link" data-dismiss="modal">
+              <button
+                type="button"
+                @click="postSemester()"
+                class="btn btn-success btn-link"
+                data-dismiss="modal"
+              >
                 OK
                 <div class="ripple-container"></div>
               </button>
@@ -215,7 +207,12 @@
               <button type="button" class="btn btn-link" data-dismiss="modal">
                 Annuler
               </button>
-              <button type="button" @click="delSemester()" class="btn btn-success btn-link" data-dismiss="modal">
+              <button
+                type="button"
+                @click="delSemester()"
+                class="btn btn-success btn-link"
+                data-dismiss="modal"
+              >
                 OK
                 <div class="ripple-container"></div>
               </button>
@@ -246,7 +243,7 @@ export default {
       toDelete: {},
       Subject: {
         name: "",
-        coeff: '',
+        coeff: "",
         teacherId: "",
         moduleId: ""
       },
@@ -256,33 +253,48 @@ export default {
     };
   },
   methods: {
-    test: function(){
-
-      console.log("here "+this.Modules.find(element => element.id == '5ddd72de384a0900043c3b15').name   )
+    test: function() {
+      console.log(
+        "here " +
+          this.Modules.find(element => element.id == "5ddd72de384a0900043c3b15").name
+      );
     },
     postSemester: function() {
+      let self = this
       if (this.Subject.name)
         axios
           .post(this.BaseUrl + "Subjects", this.Subject)
           .then(response => {
-            console.log(response);
-            this.Subjects.push(response.data);
-            this.Subject.name = {
+            console.log(response.data.teacherId);
+
+            let obj = {
+              name: self.Subject.name,
+              id: response.data.id,
+              coeff: response.data.coeff,
+              teacherId: response.data.teacherId,
+              moduleId: response.data.moduleId,
+              module: {
+                name: self.Modules.find(element => element.id == response.data.moduleId).name
+              },
+              teacher: {
+                last_name: self.Teachers.find(element => element.id == response.data.teacherId).last_name
+              }
+            };
+            console.log()
+            this.Subjects.push(obj);
+            this.Subject = {
               name: "",
-              coeff: '',
+              coeff: "",
               teacherId: "",
               moduleId: ""
-            }
+            };
           })
           .catch(error => {
             console.log(error);
           });
-      
-
-
     },
     settingEnvirement: function(item) {
-      this.toDelete = item
+      this.toDelete = item;
       console.log(this.toDelete);
     },
     delSemester: function() {
@@ -309,7 +321,7 @@ export default {
   },
   created: function() {
     axios
-      .get(this.BaseUrl + 'Modules')
+      .get(this.BaseUrl + "Modules")
       .then(response => {
         console.log(response);
         this.Modules = response.data;
@@ -319,11 +331,12 @@ export default {
       });
 
     axios
-      .get(this.BaseUrl + "Subjects")
+      .get(
+        this.BaseUrl + "Subjects?filter[include]=module&filter[include]=teacher"
+      )
       .then(response => {
         console.log(response);
         this.Subjects = response.data;
-        
       })
       .catch(error => {
         console.log(error);
@@ -332,13 +345,12 @@ export default {
     axios
       .get(this.BaseUrl + "Teachers")
       .then(response => {
-        
         this.Teachers = response.data;
-        console.log(this.feilds);
+        console.log(this.Teachers);
       })
       .catch(error => {
         console.log(error);
-      }); 
+      });
   }
 };
 </script>

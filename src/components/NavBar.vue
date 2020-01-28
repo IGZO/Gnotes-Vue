@@ -71,7 +71,7 @@
                   aria-expanded="false"
                 >
                   <i class="material-icons">notifications</i>
-                  <span class="notification">2</span>
+                  <span v-if="false" class="notification">0</span>
                   <p class="d-lg-none d-md-block">
                     Quelques actions
                   </p>
@@ -80,17 +80,14 @@
                   class="dropdown-menu dropdown-menu-right"
                   aria-labelledby="navbarDropdownMenuLink"
                 >
-                  <a class="dropdown-item" href="#"
-                    >vous avez une nouvelle liste</a
-                  >
-                  <a class="dropdown-item" href="#">Vous avez 5 élèves non notés</a>
-                  <a class="dropdown-item" href="#">Autre notification</a>
+                  
+                  
                 </div>
               </li>
               <li class="nav-item dropdown">
                 <a
                   class="nav-link"
-                  href="#pablo"
+                  href=""
                   id="navbarDropdownProfile"
                   data-toggle="dropdown"
                   aria-haspopup="true"
@@ -107,7 +104,7 @@
                 >
                  <!-- <a class="dropdown-item" href="#">Profil</a> -->
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Déconnexion</a>
+                  <a class="dropdown-item" @click="$router.push('/logout')">Déconnexion</a>
                 </div>
               </li>
             </ul>
